@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <style>
+        .custom-icon {
+            font-size: 48px;
+            color: azure;
+        }
+        .timer-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding-right: 60px;
+            padding-left: 60px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    </style>
+    <div class="timer-container">
+    <h2 id="alert" style="font-family: 'Azeret Mono'; color: azure">#hack</h2>
+    <h1 id="tdisplay" style="font-family: 'space mono'; color: #FF691E; font-size: 120px;">XX:XX</h1>
+    <button class="btn transperent-btn" id="start"><i class="fa fa-play custom-icon"></i></button>
+    <button class="btn transperent-btn" id="resume" disabled><i class="fa fa-pause custom-icon"></i></button>
+    </div>
+
+    <script>
+        var ftime = {{ ftime }} * 60;
+        var ctime = {{ ctime }} * 60;
+        var time = ftime;
+        var start = document.getElementById("start");
+        var resume = document.getElementById("resume");
+        var musicftime = new Audio('static/ftime.mp3');
+        var musicctime = new Audio('static/ctime.mp3');
+        var intervalTimer, breakTimer;
+        var isBreakTime = false;
+
+        function updateDisplay(minutes, seconds) {
+            document.getElementById("tdisplay").innerHTML = minutes + ":" + seconds;
+        }
+
+        function toggleTimer(on) {
+            if (on) {
+                start.setAttribute("disabled", "true");
+                resume.removeAttribute("disabled");
+                intervalTimer = setInterval(timerFunction, 1000);
+                if (!isBreakTime) breakTimer = setInterval(sendElapsedTime, 30000);
+            } else {
+                resume.setAttribute("disabled", "true");
+                start.removeAttribute("disabled");
+                clearInterval(intervalTimer);
+                if (!isBreakTime) clearInterval(breakTimer);
+            }
+        }
+
+        function timerFunction() {
+            var minutes = Math.floor(time / 60);
+            var seconds = Math.floor(time % 60);
+            var paddedMinutes = minutes < 10 ? "0" + minutes : minutes;
+            var paddedSeconds = seconds < 10 ? "0" + seconds : seconds;
+            updateDisplay(paddedMinutes, paddedSeconds);
+            time--;
+            if (time < 0) {
+                toggleTimer(false);
+                isBreakTime = !isBreakTime;
+                time = isBreakTime ? ctime : ftime;
+                var paddedMinutes = (time / 60) < 10 ? "0" + time / 60 : time / 60;
+                var alertText = isBreakTime ? "#slack" : "#hack";
+                var alertColor = isBreakTime ? "rgba(141, 141, 141, 1)" : "#FF691E";
+                var music = isBreakTime ? musicctime : musicftime;
+                var notificationBody = isBreakTime ? 'Time for a break!' : 'Let us get grinding again!';
+                document.getElementById("alert").innerHTML = alertText;
+                document.getElementById("tdisplay").style.color = alertColor;
+                updateDisplay(paddedMinutes, "00");
+                music.play();
+                new Notification('Hack Slack', { body: notificationBody });
+            }
+        }
+
+        start.addEventListener("click", function() {
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+            toggleTimer(true);
+        });
+
+        resume.addEventListener("click", function() {
+            toggleTimer(false);
+        });
+
+        function sendElapsedTime() {
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block settings %}
+    <div class="position-absolute bottom-0 start-0">
+        {% if session["user_id"] %}
+            <p style="font-family: 'Azeret Mono'; color: azure; font-size: 25px; padding-left: 30px">@{{ username }} | time focused: {{ time }}m</p>
+        {% endif %}
+    </div>
+    <div class="position-absolute bottom-0 end-0">
+        <form action="/settings">
+            <button class="btn transperent-btn" id="settings"><i class="fa fa-sliders" style="font-size:50px; color: azure; padding: 10px"></i></button>
+        </form>
+    </div>
+{% endblock %}

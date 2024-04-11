@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block main %}
+<style>
+    .table-container {
+        background-color: rgba(0, 0, 0, 0.3);
+        padding-right: 60px;
+        padding-left: 60px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+</style>
+<h1 style="font-family: 'space mono'; color: azure">-Leaderboard-</h1>
+<div class = "table-container">
+    <table style="font-family: 'space mono'; color: azure; font-size: 25px" class="table">
+        <thead>
+            <tr>
+                <th scope="col">user</th>
+                <th scope="col">hacktime</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in leaderboard %}
+            <tr>
+                <td scope="row">{{ user.username }}</td>
+                <td>{{ user.time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
