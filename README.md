@@ -22,7 +22,7 @@ hack-slack™ is a web application built with Flask, designed to assist users in
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/zwwix/hackwizards.git
+git clone https://github.com/zw1x/hack-slack.git
 2. Install dependencies:
 pip install -r requirements.txt
 3. Run the application:
