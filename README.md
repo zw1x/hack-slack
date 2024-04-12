@@ -1,5 +1,5 @@
 
-hack-slack™ is live and ready to use! Check it out @https://hack-slack.onrender.com
+hack-slack™ is live and ready to use! Check it out @https://hackedmind.onrender.com
 ## Description
 
 hack-slack™ is a web application built with Flask, designed to assist users in maintaining focus during work sessions and taking adequate breaks. The application utilizes the Pomodoro Technique, alternating between focused work periods ("#hack") and short breaks ("#slack").
